@@ -40,7 +40,7 @@ const char* star(const char* sANData, const size_t sANDataSize)
             }
             if (labelCount < 1) {
                 // first label, star is ok.
-                starPosition = currentStar - ptr;    
+                starPosition = currentStar - ptr;
             } else {
                 // star not permissible in non-leftmost
                 return NULL;
@@ -57,7 +57,7 @@ const char* star(const char* sANData, const size_t sANDataSize)
             return NULL;
         }
     }
-    
+
     return sANData + starPosition;
 }
 
@@ -80,6 +80,7 @@ bool  matches(const char* sANData, const char* serverName)
         return true;
     }
 
+    // No star found, but no direct match either => bail
     const char* starPosition = star(sANData, sANDataSize);
     if (starPosition == NULL) {
         return false;
@@ -88,27 +89,24 @@ bool  matches(const char* sANData, const char* serverName)
     ptrdiff_t prefixLength = starPosition - sANData;
     ptrdiff_t suffixLength = (sANData + sANDataSize - 1) - starPosition;
     ptrdiff_t matchLength = serverNameSize - (suffixLength + prefixLength);
+    const char* sANDataSuffix = starPosition + 1;
+    const char* serverNameSuffix = serverName + serverNameSize - suffixLength;
 
-    // check that prefix matches.       
-    if (prefixLength > 0 && (0 != strncasecmp(sANData, serverName, (size_t) prefixLength))) {
+    // check that prefix matches.
+    if (0 != strncasecmp(sANData, serverName, (size_t) prefixLength)) {
             return false;
     }
-    
-    const char* sANDataSuffix = starPosition + 1;
-    const char*  serverNameSuffix = (char*) serverName + serverNameSize - suffixLength;
-
-    
     // check that suffix matches
     if (0 != strncasecmp(sANDataSuffix, serverNameSuffix, (size_t) suffixLength)) {
         return false;
     }
 
+    // complete star labels (*.example.com) must match at least one character
     if (prefixLength == 0 && sANDataSuffix[0] == '.' && matchLength < 1) {
-        // complete star labels (*.example.com) must match at least one character
         return false;
     }
     // no more than one serverName label can match the star -> cannot contain periods
-    if (matchLength > 0 && (NULL != memchr(serverName + prefixLength, '.', matchLength ))) {        
+    if (matchLength > 0 && (NULL != memchr(serverName + prefixLength, '.', matchLength ))) {
         return false;
     }
 
