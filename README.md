@@ -2,7 +2,14 @@
 
 Whether Certificate names (cn, subjectAlternativeName as dNSNames) should match a given hostname.
 
+## Bulding
 
+```
+make x509hostmatch
+```
+
+
+## Results
 ```
  [ OK ]	                example.com should     match                   example.com
  [ OK ]	            www.example.com should     match               www.example.com

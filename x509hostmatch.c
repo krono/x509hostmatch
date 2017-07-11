@@ -1,3 +1,6 @@
+#if !defined(__STDC_VERSION__) ||  __STDC_VERSION__ < 199901L
+#error "Needs C99"
+#endif
 #include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
